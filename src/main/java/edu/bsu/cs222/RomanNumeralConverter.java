@@ -1,13 +1,13 @@
 package edu.bsu.cs222;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class RomanNumeralConverter {
     public int convert(String numeral) throws Exception {
         validate(numeral);
-        return convertToStream(numeral)
-                .mapToInt(RomanNumeralDigit::getValue)
+        return convertToIntStream(numeral)
                 .reduce(0, this::addDigits);
     }
 
@@ -15,11 +15,12 @@ public class RomanNumeralConverter {
         return first >= second ? first + second : second - first;
     }
 
-    private Stream<RomanNumeralDigit> convertToStream(String numeral) {
+    private IntStream convertToIntStream(String numeral) {
         return Arrays.stream(numeral
                 .toUpperCase()
                 .split(""))
-                .map(RomanNumeralDigit::valueOf);
+                .map(RomanNumeralDigit::valueOf)
+                .mapToInt(RomanNumeralDigit::getValue);
     }
 
     private void validate(String numeral) throws Exception {

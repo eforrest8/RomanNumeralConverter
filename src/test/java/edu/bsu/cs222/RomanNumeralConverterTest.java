@@ -19,7 +19,7 @@ public class RomanNumeralConverterTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"Mearns","iI","IIIIIV","VVX"})
+    @CsvSource({"Mearns","iI","IIIIIV","VVX","XVV","VIIIII"})
     @NullAndEmptySource
     public void testInvalidInput(String numeral) {
         Assertions.assertThrows(Exception.class, () -> converter.convert(numeral));

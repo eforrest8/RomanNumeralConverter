@@ -16,11 +16,15 @@ public class RomanNumeralConverter {
     }
 
     private IntStream convertToIntStream(String numeral) {
+        return convertToDigitStream(numeral)
+                .mapToInt(RomanNumeralDigit::getValue);
+    }
+
+    private Stream<RomanNumeralDigit> convertToDigitStream(String numeral) {
         return Arrays.stream(numeral
                 .toUpperCase()
                 .split(""))
-                .map(RomanNumeralDigit::valueOf)
-                .mapToInt(RomanNumeralDigit::getValue);
+                .map(RomanNumeralDigit::valueOf);
     }
 
     private void validate(String numeral) throws Exception {
@@ -38,8 +42,35 @@ public class RomanNumeralConverter {
                     throw new Exception("Invalid character found in numeral");
                 }
             }
+            checkForInvalidSubstringLength(numeral);
         } else {
             throw new Exception("Numeral must have at least one character");
+        }
+    }
+
+    private void checkForZeroLengthInput(String numeral) throws Exception {
+        if (numeral.length() <= 0)
+            throw new Exception("Numeral must have at least one character");
+    }
+
+    private void checkForInvalidSubstringLength(String numeral) throws Exception {
+        int repeats = 1;
+        char previous = numeral.charAt(0);
+        for (char character:
+             numeral.substring(1).toCharArray()) {
+            if (character == previous) {
+                repeats++;
+            } else {
+                if (repeats * RomanNumeralDigit.valueOf(Character.toString(previous)).getValue() >=
+                        RomanNumeralDigit.valueOf(Character.toString(character)).getValue() &&
+                        RomanNumeralDigit.valueOf(Character.toString(previous)).getValue() <
+                        RomanNumeralDigit.valueOf(Character.toString(character)).getValue()) {
+                    throw new Exception("Invalid numeral");
+                } else {
+                    repeats = 1;
+                }
+            }
+            previous = character;
         }
     }
 }

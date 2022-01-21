@@ -5,9 +5,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class RomanNumeralConverter {
-    private static final char[] validCharacters = {
-            'C', 'D', 'I', 'L', 'M', 'V', 'X',
-            'c', 'd', 'i', 'l', 'm', 'v', 'x'};
 
     public int convert(String numeral) throws Exception {
         validate(numeral);
@@ -33,17 +30,18 @@ public class RomanNumeralConverter {
 
     private void validate(String numeral) throws Exception {
         checkForZeroLengthInput(numeral);
+        checkForInconsistentCapitalization(numeral);
+        checkForInvalidSubstringLength(numeral);
+    }
+
+    private void checkForInconsistentCapitalization(String numeral) throws Exception{
         char[] chars = numeral.toCharArray();
         boolean caseMode = Character.isLowerCase(chars[0]);
         for (char character : chars) {
             if (caseMode != Character.isLowerCase(character)) {
                 throw new Exception("Inconsistent case");
             }
-            if (Arrays.binarySearch(validCharacters,character) < 0) {
-                throw new Exception("Invalid character found in numeral");
-            }
         }
-        checkForInvalidSubstringLength(numeral);
     }
 
     private void checkForZeroLengthInput(String numeral) throws Exception {

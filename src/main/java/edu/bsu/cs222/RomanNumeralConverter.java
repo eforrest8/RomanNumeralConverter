@@ -1,13 +1,18 @@
 package edu.bsu.cs222;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class RomanNumeralConverter {
 
-    public int convert(String numeral) throws Exception {
+    public int convert(String numeral) {
         validate(numeral);
+        return addSequence(numeral);
+    }
+
+    public int addSequence(String numeral) {
         return convertToIntStream(numeral)
                 .reduce(0, this::addDigits);
     }
@@ -28,45 +33,41 @@ public class RomanNumeralConverter {
                 .map(RomanNumeralDigit::valueOf);
     }
 
-    private void validate(String numeral) throws Exception {
+    private void validate(String numeral) throws RuntimeException {
         checkForZeroLengthInput(numeral);
         checkForInconsistentCapitalization(numeral);
         checkForInvalidSubstringLength(numeral);
     }
 
-    private void checkForInconsistentCapitalization(String numeral) throws Exception{
+    private void checkForInconsistentCapitalization(String numeral) throws RuntimeException{
         char[] chars = numeral.toCharArray();
         boolean caseMode = Character.isLowerCase(chars[0]);
         for (char character : chars) {
             if (caseMode != Character.isLowerCase(character)) {
-                throw new Exception("Inconsistent case");
+                throw new RuntimeException("Inconsistent case");
             }
         }
     }
 
-    private void checkForZeroLengthInput(String numeral) throws Exception {
-        if (numeral.length() <= 0)
-            throw new Exception("Numeral must have at least one character");
+    private void checkForZeroLengthInput(String numeral) throws RuntimeException {
+        if (numeral.length() <= 0) {
+            throw new RuntimeException("Numeral must have at least one character");
+        }
     }
 
-    private void checkForInvalidSubstringLength(String numeral) throws Exception {
-        int repeats = 1;
-        char previous = numeral.charAt(0);
-        for (char character:
-             numeral.substring(1).toCharArray()) {
-            if (character == previous) {
-                repeats++;
-            } else {
-                if (repeats * RomanNumeralDigit.valueOf(Character.toString(previous)).getValue() >=
-                        RomanNumeralDigit.valueOf(Character.toString(character)).getValue() &&
-                        RomanNumeralDigit.valueOf(Character.toString(previous)).getValue() <
-                        RomanNumeralDigit.valueOf(Character.toString(character)).getValue()) {
-                    throw new Exception("Invalid numeral");
-                } else {
-                    repeats = 1;
-                }
-            }
-            previous = character;
-        }
+    private void checkForInvalidSubstringLength(String numeral) throws RuntimeException {
+        // the regex here matches all groups of contiguous characters. Thanks Stackoverflow!
+        Arrays.stream(numeral.toUpperCase().split("(?<=(.))(?!\\1)"))
+                .filter(group -> !group.startsWith("M"))
+                .forEach(group -> {
+                    RomanNumeralDigit currentDigit = RomanNumeralDigit.valueOf(group.substring(0,1));
+                    if (addSequence(group) >= nextDigit(currentDigit.getValue())) {
+                        throw new RuntimeException("Invalid substring in numeral");
+                    }
+                });
+    }
+
+    public int nextDigit(int digit) {
+        return Integer.toString(digit).startsWith("5") ? digit * 2 : digit * 5;
     }
 }

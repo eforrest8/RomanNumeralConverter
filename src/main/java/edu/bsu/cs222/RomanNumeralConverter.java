@@ -1,7 +1,6 @@
 package edu.bsu.cs222;
 
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 

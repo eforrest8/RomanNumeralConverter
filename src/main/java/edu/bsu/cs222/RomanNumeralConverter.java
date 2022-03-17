@@ -11,7 +11,7 @@ public class RomanNumeralConverter {
         return addSequence(numeral);
     }
 
-    public int addSequence(String numeral) {
+    private int addSequence(String numeral) {
         return convertToIntStream(numeral)
                 .reduce(0, this::addDigits);
     }
